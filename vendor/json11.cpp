@@ -173,6 +173,11 @@ protected:
     void dump(string &out) const override { json11::dump(m_value, out); }
 };
 
+// MSVC fix: std::nullptr_t does not support operator< (undefined in C++11).
+// Two null values are always equal, never "less than".
+template<>
+bool Value<Json::NUL, std::nullptr_t>::less(const JsonValue *) const { return false; }
+
 class JsonDouble final : public Value<Json::NUMBER, double> {
     double number_value() const override { return m_value; }
     int int_value() const override { return static_cast<int>(m_value); }
